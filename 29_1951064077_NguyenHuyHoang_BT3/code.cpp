@@ -6,7 +6,7 @@ using namespace std;
 class Animal {
 public:
     virtual string MakeSound() const {
-        return "Âm thanh chung của động vật";
+        return "Common sound";
     }
     virtual ~Animal() {}
 };
