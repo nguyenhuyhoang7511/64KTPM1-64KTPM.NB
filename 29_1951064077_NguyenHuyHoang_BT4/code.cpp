@@ -1,6 +1,6 @@
 #include <iostream>
 using namespace std;
-
+ 
 class ICar {
 public:
     virtual void output() const = 0;
@@ -99,3 +99,4 @@ int main() {
 
     return 0;
 }
+
