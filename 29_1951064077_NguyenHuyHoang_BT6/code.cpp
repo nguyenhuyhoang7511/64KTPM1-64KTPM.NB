@@ -45,3 +45,4 @@ int main() {
     delete vehicle;
     return 0;
 }
+
