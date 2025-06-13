@@ -5,9 +5,7 @@ using namespace std;
 
 class Animal {
 public:
-    virtual string MakeSound() const {
-        return "Common sound";
-    }
+    virtual string MakeSound() const = 0; 
     virtual ~Animal() {}
 };
 
@@ -56,9 +54,9 @@ int main() {
     AnimalFactory* catFactory = new CatFactory();
 
     dogFactory->SomeOperation();  
-    catFactory->SomeOperation(); 
+    catFactory->SomeOperation();  
 
-    delete dogFactory;
+    delete dogFactory; 
     delete catFactory;
 
     return 0;

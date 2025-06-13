@@ -1,23 +1,11 @@
 #include <iostream>
+#include <memory>
 using namespace std;
- 
+
 class ICar {
 public:
-    virtual void output() const = 0;
-    virtual ~ICar() = default;
-};
-
-class IBicycle {
-public:
-    virtual void output() const = 0;
-    virtual ~IBicycle() = default;
-};
-
-class VehicleFactory {
-public:
-    virtual ICar* createCar() const = 0;
-    virtual IBicycle* createBicycle() const = 0;
-    virtual ~VehicleFactory() = default;
+    virtual void output() const = 0;  
+    virtual ~ICar() = default;     
 };
 
 class VNCar : public ICar {
@@ -34,6 +22,12 @@ public:
     }
 };
 
+class IBicycle {
+public:
+    virtual void output() const = 0;  
+    virtual ~IBicycle() = default;    
+};
+
 class VNBicycle : public IBicycle {
 public:
     void output() const override {
@@ -48,55 +42,60 @@ public:
     }
 };
 
+class VehicleFactory {
+public:
+    virtual unique_ptr<ICar> createCar() const = 0;       
+    virtual unique_ptr<IBicycle> createBicycle() const = 0; 
+    virtual ~VehicleFactory() = default;  
+};
+
 class VNFactory : public VehicleFactory {
 public:
-    ICar* createCar() const override {
-        return new VNCar();
+    unique_ptr<ICar> createCar() const override {
+        return make_unique<VNCar>();  
     }
 
-    IBicycle* createBicycle() const override {
-        return new VNBicycle();
+    unique_ptr<IBicycle> createBicycle() const override {
+        return make_unique<VNBicycle>();  
     }
 };
 
 class CNFactory : public VehicleFactory {
 public:
-    ICar* createCar() const override {
-        return new CNCar();
+    unique_ptr<ICar> createCar() const override {
+        return make_unique<CNCar>();  
     }
 
-    IBicycle* createBicycle() const override {
-        return new CNBicycle();
+    unique_ptr<IBicycle> createBicycle() const override {
+        return make_unique<CNBicycle>();  
     }
 };
 
+
 class Client {
 private:
-    VehicleFactory* factory;
+    unique_ptr<VehicleFactory> factory;  
+
 public:
-    Client(VehicleFactory* factory) : factory(factory) {}
+    Client(unique_ptr<VehicleFactory> factory) : factory(move(factory)) {}
 
     void someOperation() const {
-        ICar* car = factory->createCar();
-        IBicycle* bicycle = factory->createBicycle();
+        auto car = factory->createCar();  
+        auto bicycle = factory->createBicycle();  
 
-        car->output();
-        bicycle->output();
-
-        delete car;
-        delete bicycle;
+        car->output();  
+        bicycle->output();  
     }
 };
 
 int main() {
     cout << "== Việt Nam Factory ==" << endl;
-    Client clientVN(new VNFactory());
-    clientVN.someOperation();
+    Client clientVN(make_unique<VNFactory>());
+    clientVN.someOperation();  /
 
     cout << "\n== China Factory ==" << endl;
-    Client clientCN(new CNFactory());
-    clientCN.someOperation();
+    Client clientCN(make_unique<CNFactory>());
+    clientCN.someOperation();  
 
     return 0;
 }
-
