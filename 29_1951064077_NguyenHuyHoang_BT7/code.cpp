@@ -1,116 +1,113 @@
 #include <iostream>
 #include <string>
-#include <vector>
-#include <memory>
+using namespace std;
 
-
-class IObserver {
+class IVehicle {
 public:
-    virtual void update(const std::string& event) = 0;
-    virtual ~IObserver() = default;
+    virtual double Speed() const = 0;
+    virtual string Info() const = 0;
+    virtual string getColor() const = 0;
+    virtual ~IVehicle() = default;
 };
 
-
-class ISubject {
+class Car : public IVehicle {
 public:
-    virtual void addObserver(std::shared_ptr<IObserver> observer) = 0;
-    virtual void removeObserver(std::shared_ptr<IObserver> observer) = 0;
-    virtual void notifyObservers(const std::string& event) = 0;
-    virtual ~ISubject() = default;
-};
-
-
-class Employee : public IObserver {
-public:
-    void update(const std::string& event) override {
-        if (event == "leaveRequest") {
-            std::cout << "Employee: Leave request is under review.\n";
-        } else if (event == "updateInfo") {
-            std::cout << "Employee: Info updated successfully.\n";
-        }
+    double Speed() const override {
+        return 120.0;
     }
 
-    void requestLeave(ISubject* subject) {
-        std::cout << "Employee: Requesting leave.\n";
-        subject->notifyObservers("leaveRequest");
+    string Info() const override {
+        return "Sedan Car";
     }
 
-    void updateInfo(ISubject* subject) {
-        std::cout << "Employee: Updating info.\n";
-        subject->notifyObservers("updateInfo");
+    string getColor() const override {
+        return "Red";
     }
 };
 
-
-class Department : public IObserver {
+class Motorcycle : public IVehicle {
 public:
-    void update(const std::string& event) override {
-        if (event == "leaveRequest") {
-            std::cout << "Department: Notifying about leave request.\n";
-        } else if (event == "updateInfo") {
-            std::cout << "Department: Info update processed.\n";
-        }
+    double Speed() const override {
+        return 150.0;
     }
 
-    void assignEmployee(ISubject* subject) {
-        std::cout << "Department: Assigning employee.\n";
-        subject->notifyObservers("assign");
+    string Info() const override {
+        return "Sport Bike";
+    }
+
+    string getColor() const override {
+        return "Blue";
     }
 };
 
+class VehicleAbstraction {
+protected:
+    IVehicle* vehicle;
 
-class Manager : public IObserver {
 public:
-    void update(const std::string& event) override {
-        if (event == "leaveRequest") {
-            std::cout << "Manager: Leave request approved.\n";
-        } else if (event == "assign") {
-            std::cout << "Manager: Employee assigned to a new task.\n";
-        }
+    VehicleAbstraction(IVehicle* vehicle) : vehicle(vehicle) {}
+
+    virtual double getSpeed() const {
+        return vehicle->Speed();
     }
 
-    void reviewLeave(ISubject* subject) {
-        std::cout << "Manager: Reviewing leave request.\n";
-        subject->notifyObservers("leaveRequest");
+    virtual string getInfo() const {
+        return vehicle->Info();
+    }
+
+    string getColor() const {
+        return vehicle->getColor();
     }
 };
 
-
-class ConcreteSubject : public ISubject {
+class AdvancedVehicle : public VehicleAbstraction {
 private:
-    std::vector<std::shared_ptr<IObserver>> observers;
+    string premiumColor;
 
 public:
-    void addObserver(std::shared_ptr<IObserver> observer) override {
-        observers.push_back(observer);
+    AdvancedVehicle(IVehicle* vehicle) : VehicleAbstraction(vehicle), premiumColor("Metallic") {}
+
+    double getSpeed() const override {
+        return vehicle->Speed() * 1.2;
     }
 
-    void removeObserver(std::shared_ptr<IObserver> observer) override {
-        observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
+    string getInfo() const override {
+        return vehicle->Info() + " (Premium)";
     }
 
-    void notifyObservers(const std::string& event) override {
-        for (const auto& observer : observers) {
-            observer->update(event);
-        }
+    string getPremiumColor() const {
+        return premiumColor + " " + vehicle->getColor();
     }
 };
+
+void printVehicleInfo(const VehicleAbstraction& vehicle) {
+    cout << "Vehicle: " << vehicle.getInfo() << endl;
+    cout << "Speed: " << vehicle.getSpeed() << " km/h" << endl;
+    cout << "Color: " << vehicle.getColor() << endl;
+}
 
 int main() {
-    std::shared_ptr<ConcreteSubject> subject = std::make_shared<ConcreteSubject>();
+    IVehicle* car = new Car();
+    IVehicle* bike = new Motorcycle();
 
-    std::shared_ptr<Employee> emp = std::make_shared<Employee>();
-    std::shared_ptr<Department> dept = std::make_shared<Department>();
-    std::shared_ptr<Manager> mgr = std::make_shared<Manager>();
+    cout << "Basic Vehicles" << endl;
+    VehicleAbstraction basicCar(car);
+    VehicleAbstraction basicBike(bike);
 
-    subject->addObserver(emp);
-    subject->addObserver(dept);
-    subject->addObserver(mgr);
+    printVehicleInfo(basicCar);
+    printVehicleInfo(basicBike);
 
-    emp->requestLeave(subject.get());
-    emp->updateInfo(subject.get());
-    dept->assignEmployee(subject.get());
-    mgr->reviewLeave(subject.get());
+    cout << "\nAdvanced Vehicles" << endl;
+    AdvancedVehicle premiumCar(car);
+    AdvancedVehicle premiumBike(bike);
+
+    printVehicleInfo(premiumCar);
+    printVehicleInfo(premiumBike);
+    cout << "Premium Car Color: " << premiumCar.getPremiumColor() << endl;
+    cout << "Premium Bike Color: " << premiumBike.getPremiumColor() << endl;
+
+    delete car;
+    delete bike;
 
     return 0;
 }

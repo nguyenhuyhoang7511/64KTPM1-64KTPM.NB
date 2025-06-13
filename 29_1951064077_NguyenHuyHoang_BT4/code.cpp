@@ -1,71 +1,101 @@
 #include <iostream>
-#include <string>
 using namespace std;
 
-class Employee {
+class ICar {
 public:
-    virtual void showInfo() = 0;
-    virtual Employee* clone() = 0;  
-    virtual ~Employee() {}
+    virtual void output() const = 0;
+    virtual ~ICar() = default;
 };
 
-class Manager : public Employee {
+class IBicycle {
 public:
-    void showInfo() override {
-        cout << "This is a Manager." << endl;
-    }
-
-    Employee* clone() override {
-        return new Manager(*this);  
-    }
+    virtual void output() const = 0;
+    virtual ~IBicycle() = default;
 };
 
-class Engineer : public Employee {
+class VehicleFactory {
 public:
-    void showInfo() override {
-        cout << "This is an Engineer." << endl;
-    }
+    virtual ICar* createCar() const = 0;
+    virtual IBicycle* createBicycle() const = 0;
+    virtual ~VehicleFactory() = default;
+};
 
-    Employee* clone() override {
-        return new Engineer(*this);  
+class VNCar : public ICar {
+public:
+    void output() const override {
+        cout << "VNCar: Tốc độ tối đa là 200 km/h" << endl;
     }
 };
 
-class EmployeeFactory {
+class CNCar : public ICar {
 public:
-    virtual Employee* createEmployee() = 0;  
-    virtual ~EmployeeFactory() {}
-};
-
-class ManagerFactory : public EmployeeFactory {
-public:
-    Employee* createEmployee() override {
-        return new Manager();  
+    void output() const override {
+        cout << "CNCar: Tốc độ tối đa là 180 km/h" << endl;
     }
 };
 
-class EngineerFactory : public EmployeeFactory {
+class VNBicycle : public IBicycle {
 public:
-    Employee* createEmployee() override {
-        return new Engineer();  
+    void output() const override {
+        cout << "VNBicycle: Tốc độ tối đa là 30 km/h" << endl;
     }
 };
 
-void clientCode(EmployeeFactory* factory) {
-    Employee* employee = factory->createEmployee();  
-    employee->showInfo();  
+class CNBicycle : public IBicycle {
+public:
+    void output() const override {
+        cout << "CNBicycle: Tốc độ tối đa là 25 km/h" << endl;
+    }
+};
 
-    delete employee;  
-}
+class VNFactory : public VehicleFactory {
+public:
+    ICar* createCar() const override {
+        return new VNCar();
+    }
+
+    IBicycle* createBicycle() const override {
+        return new VNBicycle();
+    }
+};
+
+class CNFactory : public VehicleFactory {
+public:
+    ICar* createCar() const override {
+        return new CNCar();
+    }
+
+    IBicycle* createBicycle() const override {
+        return new CNBicycle();
+    }
+};
+
+class Client {
+private:
+    VehicleFactory* factory;
+public:
+    Client(VehicleFactory* factory) : factory(factory) {}
+
+    void someOperation() const {
+        ICar* car = factory->createCar();
+        IBicycle* bicycle = factory->createBicycle();
+
+        car->output();
+        bicycle->output();
+
+        delete car;
+        delete bicycle;
+    }
+};
 
 int main() {
-    cout << "Creating Full-time Employees:\n";
+    cout << "== Việt Nam Factory ==" << endl;
+    Client clientVN(new VNFactory());
+    clientVN.someOperation();
 
-    ManagerFactory managerFactory;
-    clientCode(&managerFactory);  
-
-    EngineerFactory engineerFactory;
-    clientCode(&engineerFactory);  
+    cout << "\n== China Factory ==" << endl;
+    Client clientCN(new CNFactory());
+    clientCN.someOperation();
 
     return 0;
 }

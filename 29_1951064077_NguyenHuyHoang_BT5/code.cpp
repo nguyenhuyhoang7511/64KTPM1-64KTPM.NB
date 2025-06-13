@@ -1,56 +1,135 @@
 #include <iostream>
-#include <string>
 #include <memory>
+using namespace std;
 
-class Employee {
+class VehicleBuilder {
+public:
+    virtual void reset() = 0;
+    virtual void setMaxSpeed(int speed) = 0;
+    virtual void setWheels(int number) = 0;
+    virtual ~VehicleBuilder() = default;
+};
+
+class Car {
 private:
-    std::string name;
-    std::string position;
-    double salary;
+    int maxSpeed;
+    int wheels;
 
 public:
-    Employee& setName(const std::string& n) {
-        name = n;
-        return *this;
+    int getMaxSpeed() const { return maxSpeed; }
+    int getWheels() const { return wheels; }
+
+    void setMaxSpeed(int maxSpeed) { this->maxSpeed = maxSpeed; }
+    void setWheels(int wheels) { this->wheels = wheels; }
+
+    string toString() const {
+        return "Car{maxSpeed=" + to_string(maxSpeed) + ", wheels=" + to_string(wheels) + "}";
+    }
+};
+
+class Bicycle {
+private:
+    int maxSpeed;
+    int wheels;
+
+public:
+    int getMaxSpeed() const { return maxSpeed; }
+    int getWheels() const { return wheels; }
+
+    void setMaxSpeed(int maxSpeed) { this->maxSpeed = maxSpeed; }
+    void setWheels(int wheels) { this->wheels = wheels; }
+
+    string toString() const {
+        return "Bicycle{maxSpeed=" + to_string(maxSpeed) + ", wheels=" + to_string(wheels) + "}";
+    }
+};
+
+class CarBuilder : public VehicleBuilder {
+private:
+    unique_ptr<Car> car;
+
+public:
+    CarBuilder() : car(make_unique<Car>()) {}
+
+    void reset() override {
+        car = make_unique<Car>();
     }
 
-    Employee& setPosition(const std::string& p) {
-        position = p;
-        return *this;
+    void setMaxSpeed(int speed) override {
+        car->setMaxSpeed(speed);
     }
 
-    Employee& setSalary(double s) {
-        salary = s;
-        return *this;
+    void setWheels(int number) override {
+        car->setWheels(number);
     }
 
-    void showInfo() const {
-        std::cout << "Name: " << name << "\n"
-                  << "Position: " << position << "\n"
-                  << "Salary: $" << salary << "\n";
+    Car getResult() {
+        return *car;
+    }
+};
+
+class BicycleBuilder : public VehicleBuilder {
+private:
+    unique_ptr<Bicycle> bicycle;
+
+public:
+    BicycleBuilder() : bicycle(make_unique<Bicycle>()) {}
+
+    void reset() override {
+        bicycle = make_unique<Bicycle>();
+    }
+
+    void setMaxSpeed(int speed) override {
+        bicycle->setMaxSpeed(speed);
+    }
+
+    void setWheels(int number) override {
+        bicycle->setWheels(number);
+    }
+
+    Bicycle getResult() {
+        return *bicycle;
+    }
+};
+
+class Director {
+private:
+    unique_ptr<VehicleBuilder> builder;
+
+public:
+    void makeVehicle() {
+        builder->reset();
+    }
+
+    void makeCar() {
+        builder = make_unique<CarBuilder>();
+        makeVehicle();
+        builder->setMaxSpeed(200);
+        builder->setWheels(4);
+    }
+
+    void makeBicycle() {
+        builder = make_unique<BicycleBuilder>();
+        makeVehicle();
+        builder->setMaxSpeed(30);
+        builder->setWheels(2);
+    }
+
+    unique_ptr<VehicleBuilder> getResult() {
+        return move(builder);
     }
 };
 
 int main() {
-    
-    std::shared_ptr<Employee> dev = std::make_shared<Employee>();
-    dev->setName("Nguyen Van A")
-        .setPosition("Developer")
-        .setSalary(1500.0);
-    
-    std::cout << "Developer Info:\n";
-    dev->showInfo();
+    Director director;
 
-    std::cout << "\n";
+    director.makeCar();
+    Car car = dynamic_cast<Car&>(*director.getResult());
+    cout << "Xe ô tô được tạo: " << car.toString() << endl;
 
-    
-    std::shared_ptr<Employee> mgr = std::make_shared<Employee>();
-    mgr->setName("Tran Thi B")
-        .setPosition("Manager")
-        .setSalary(3000.0);
-
-    std::cout << "Manager Info:\n";
-    mgr->showInfo();
+    director.makeBicycle();
+    Bicycle bicycle = dynamic_cast<Bicycle&>(*director.getResult());
+    cout << "Xe đạp được tạo: " << bicycle.toString() << endl;
 
     return 0;
 }
