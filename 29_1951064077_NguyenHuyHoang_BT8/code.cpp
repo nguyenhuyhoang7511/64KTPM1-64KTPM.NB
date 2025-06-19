@@ -1,84 +1,91 @@
 #include <iostream>
 using namespace std;
 
+
 class Mediator {
 public:
     virtual void notify(void* sender) = 0;
     virtual ~Mediator() = default;
 };
 
-class Car {
+
+class Dog {
 private:
     Mediator* m;
 
 public:
-    Car(Mediator* m) : m(m) {}
+    Dog(Mediator* m) : m(m) {}
 
     int getMaxSpeed() {
-        cout << "Car: Tốc độ tối đa." << endl;
+        cout << "Dog: Running speed." << endl;
         m->notify(this);
-        return 200;
+        return 30;  
     }
 };
 
-class Bicycle {
+
+class Cat {
 private:
     Mediator* m;
 
 public:
-    Bicycle(Mediator* m) : m(m) {}
+    Cat(Mediator* m) : m(m) {}
 
     int getMaxSpeed() {
-        cout << "Bicycle: Tốc độ tối đa" << endl;
+        cout << "Cat: Running speed." << endl;
         m->notify(this);
-        return 40;
+        return 20;  
     }
 };
 
-class MediatorVehicle : public Mediator {
+
+class MediatorAnimal : public Mediator {
 private:
-    Car* componentCar;
-    Bicycle* componentBicycle;
+    Dog* componentDog;
+    Cat* componentCat;
 
 public:
-    void setComponentCar(Car* car) {
-        componentCar = car;
+    void setComponentDog(Dog* dog) {
+        componentDog = dog;
     }
 
-    void setComponentBicycle(Bicycle* bicycle) {
-        componentBicycle = bicycle;
+    void setComponentCat(Cat* cat) {
+        componentCat = cat;
     }
 
     void notify(void* sender) override {
-        if (sender == componentCar) {
-            reactOnCar();
-        } else if (sender == componentBicycle) {
-            reactOnBicycle();
+        if (sender == componentDog) {
+            reactOnDog();
+        } else if (sender == componentCat) {
+            reactOnCat();
         }
     }
 
 private:
-    void reactOnCar() {
-        cout << "Mediator: Car." << endl;
+    void reactOnDog() {
+        cout << "Mediator: Dog is running." << endl;
     }
 
-    void reactOnBicycle() {
-        cout << "Mediator: Bicycle." << endl;
+    void reactOnCat() {
+        cout << "Mediator: Cat is running." << endl;
     }
 };
 
 int main() {
-    MediatorVehicle mediator;
+    
+    MediatorAnimal mediator;
 
-    Car car(&mediator);
-    Bicycle bicycle(&mediator);
+    
+    Dog dog(&mediator);
+    Cat cat(&mediator);
 
-    mediator.setComponentCar(&car);
-    mediator.setComponentBicycle(&bicycle);
+    
+    mediator.setComponentDog(&dog);
+    mediator.setComponentCat(&cat);
 
-    cout << "max speed car: " << car.getMaxSpeed() << " km/h" << endl;
-    cout << "max speed bicycle: " << bicycle.getMaxSpeed() << " km/h" << endl;
+    
+    cout << "Max speed of dog: " << dog.getMaxSpeed() << " km/h" << endl;
+    cout << "Max speed of cat: " << cat.getMaxSpeed() << " km/h" << endl;
 
     return 0;
 }
-

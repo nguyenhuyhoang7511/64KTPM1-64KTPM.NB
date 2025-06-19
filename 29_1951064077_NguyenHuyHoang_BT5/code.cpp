@@ -2,135 +2,101 @@
 #include <memory>
 using namespace std;
 
-class VehicleBuilder {
+
+class AnimalBuilder {
 public:
     virtual void reset() = 0;
-    virtual void setMaxSpeed(int speed) = 0;
-    virtual void setWheels(int number) = 0;
-    virtual ~VehicleBuilder() = default;
+    virtual void setSound(const string& sound) = 0;
+    virtual void setLegs(int number) = 0;
+    virtual ~AnimalBuilder() = default;
 };
 
-class Car {
+
+class Dog {
 private:
-    int maxSpeed;
-    int wheels;
+    string sound;
+    int legs;
 
 public:
-    int getMaxSpeed() const { return maxSpeed; }
-    int getWheels() const { return wheels; }
+    string getSound() const { return sound; }
+    int getLegs() const { return legs; }
 
-    void setMaxSpeed(int maxSpeed) { this->maxSpeed = maxSpeed; }
-    void setWheels(int wheels) { this->wheels = wheels; }
+    void setSound(const string& sound) { this->sound = sound; }
+    void setLegs(int legs) { this->legs = legs; }
 
     string toString() const {
-        return "Car{maxSpeed=" + to_string(maxSpeed) + ", wheels=" + to_string(wheels) + "}";
+        return "Dog{sound=" + sound + ", legs=" + to_string(legs) + "}";
     }
 };
 
-class Bicycle {
+
+class Cat {
 private:
-    int maxSpeed;
-    int wheels;
+    string sound;
+    int legs;
 
 public:
-    int getMaxSpeed() const { return maxSpeed; }
-    int getWheels() const { return wheels; }
+    string getSound() const { return sound; }
+    int getLegs() const { return legs; }
 
-    void setMaxSpeed(int maxSpeed) { this->maxSpeed = maxSpeed; }
-    void setWheels(int wheels) { this->wheels = wheels; }
+    void setSound(const string& sound) { this->sound = sound; }
+    void setLegs(int legs) { this->legs = legs; }
 
     string toString() const {
-        return "Bicycle{maxSpeed=" + to_string(maxSpeed) + ", wheels=" + to_string(wheels) + "}";
+        return "Cat{sound=" + sound + ", legs=" + to_string(legs) + "}";
     }
 };
 
-class CarBuilder : public VehicleBuilder {
+
+class DogBuilder : public AnimalBuilder {
 private:
-    unique_ptr<Car> car;
+    unique_ptr<Dog> dog;
 
 public:
-    CarBuilder() : car(make_unique<Car>()) {}
+    DogBuilder() : dog(make_unique<Dog>()) {}
 
     void reset() override {
-        car = make_unique<Car>();
+        dog = make_unique<Dog>();
     }
 
-    void setMaxSpeed(int speed) override {
-        car->setMaxSpeed(speed);
+    void setSound(const string& sound) override {
+        dog->setSound(sound);
     }
 
-    void setWheels(int number) override {
-        car->setWheels(number);
+    void setLegs(int number) override {
+        dog->setLegs(number);
     }
 
-    Car getResult() {
-        return *car;
+    Dog getResult() {
+        return *dog;
     }
 };
 
-class BicycleBuilder : public VehicleBuilder {
+
+class CatBuilder : public AnimalBuilder {
 private:
-    unique_ptr<Bicycle> bicycle;
+    unique_ptr<Cat> cat;
 
 public:
-    BicycleBuilder() : bicycle(make_unique<Bicycle>()) {}
+    CatBuilder() : cat(make_unique<Cat>()) {}
 
     void reset() override {
-        bicycle = make_unique<Bicycle>();
+        cat = make_unique<Cat>();
     }
 
-    void setMaxSpeed(int speed) override {
-        bicycle->setMaxSpeed(speed);
+    void setSound(const string& sound) override {
+        cat->setSound(sound);
     }
 
-    void setWheels(int number) override {
-        bicycle->setWheels(number);
+    void setLegs(int number) override {
+        cat->setLegs(number);
     }
 
-    Bicycle getResult() {
-        return *bicycle;
+    Cat getResult() {
+        return *cat;
     }
 };
+
 
 class Director {
 private:
-    unique_ptr<VehicleBuilder> builder;
-
-public:
-    void makeVehicle() {
-        builder->reset();
-    }
-
-    void makeCar() {
-        builder = make_unique<CarBuilder>();
-        makeVehicle();
-        builder->setMaxSpeed(200);
-        builder->setWheels(4);
-    }
-
-    void makeBicycle() {
-        builder = make_unique<BicycleBuilder>();
-        makeVehicle();
-        builder->setMaxSpeed(30);
-        builder->setWheels(2);
-    }
-
-    unique_ptr<VehicleBuilder> getResult() {
-        return move(builder);
-    }
-};
-
-int main() {
-    Director director;
-
-    director.makeCar();
-    Car car = dynamic_cast<Car&>(*director.getResult());
-    cout << "Xe ô tô được tạo: " << car.toString() << endl;
-
-    director.makeBicycle();
-    Bicycle bicycle = dynamic_cast<Bicycle&>(*director.getResult());
-    cout << "Xe đạp được tạo: " << bicycle.toString() << endl;
-
-    return 0;
-}
-

@@ -2,100 +2,74 @@
 #include <memory>
 using namespace std;
 
-class ICar {
+// 
+class IAnimal {
 public:
-    virtual void output() const = 0;  
-    virtual ~ICar() = default;     
+    virtual void makeSound() const = 0;  
+    virtual ~IAnimal() = default;         
 };
 
-class VNCar : public ICar {
+
+class Dog : public IAnimal {
 public:
-    void output() const override {
-        cout << "VNCar: Tốc độ tối đa là 200 km/h" << endl;
+    void makeSound() const override {
+        cout << "Dog: Woof!" << endl;
     }
 };
 
-class CNCar : public ICar {
+
+class Cat : public IAnimal {
 public:
-    void output() const override {
-        cout << "CNCar: Tốc độ tối đa là 180 km/h" << endl;
+    void makeSound() const override {
+        cout << "Cat: Meow!" << endl;
     }
 };
 
-class IBicycle {
+
+class AnimalFactory {
 public:
-    virtual void output() const = 0;  
-    virtual ~IBicycle() = default;    
+    virtual unique_ptr<IAnimal> createAnimal() const = 0;  
+    virtual ~AnimalFactory() = default;                    
 };
 
-class VNBicycle : public IBicycle {
+
+class DogFactory : public AnimalFactory {
 public:
-    void output() const override {
-        cout << "VNBicycle: Tốc độ tối đa là 30 km/h" << endl;
+    unique_ptr<IAnimal> createAnimal() const override {
+        return make_unique<Dog>();  
     }
 };
 
-class CNBicycle : public IBicycle {
+
+class CatFactory : public AnimalFactory {
 public:
-    void output() const override {
-        cout << "CNBicycle: Tốc độ tối đa là 25 km/h" << endl;
-    }
-};
-
-class VehicleFactory {
-public:
-    virtual unique_ptr<ICar> createCar() const = 0;       
-    virtual unique_ptr<IBicycle> createBicycle() const = 0; 
-    virtual ~VehicleFactory() = default;  
-};
-
-class VNFactory : public VehicleFactory {
-public:
-    unique_ptr<ICar> createCar() const override {
-        return make_unique<VNCar>();  
-    }
-
-    unique_ptr<IBicycle> createBicycle() const override {
-        return make_unique<VNBicycle>();  
-    }
-};
-
-class CNFactory : public VehicleFactory {
-public:
-    unique_ptr<ICar> createCar() const override {
-        return make_unique<CNCar>();  
-    }
-
-    unique_ptr<IBicycle> createBicycle() const override {
-        return make_unique<CNBicycle>();  
+    unique_ptr<IAnimal> createAnimal() const override {
+        return make_unique<Cat>();  
     }
 };
 
 
 class Client {
 private:
-    unique_ptr<VehicleFactory> factory;  
+    unique_ptr<AnimalFactory> factory;  
 
 public:
-    Client(unique_ptr<VehicleFactory> factory) : factory(move(factory)) {}
+    Client(unique_ptr<AnimalFactory> factory) : factory(move(factory)) {}
 
     void someOperation() const {
-        auto car = factory->createCar();  
-        auto bicycle = factory->createBicycle();  
-
-        car->output();  
-        bicycle->output();  
+        auto animal = factory->createAnimal();  
+        animal->makeSound();  
     }
 };
 
 int main() {
-    cout << "== Việt Nam Factory ==" << endl;
-    Client clientVN(make_unique<VNFactory>());
-    clientVN.someOperation();  /
+    cout << "== Dog Factory ==" << endl;
+    Client clientDog(make_unique<DogFactory>());
+    clientDog.someOperation();  
 
-    cout << "\n== China Factory ==" << endl;
-    Client clientCN(make_unique<CNFactory>());
-    clientCN.someOperation();  
+    cout << "\n== Cat Factory ==" << endl;
+    Client clientCat(make_unique<CatFactory>());
+    clientCat.someOperation();  
 
     return 0;
 }

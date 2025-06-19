@@ -1,48 +1,50 @@
 #include <iostream>
 using namespace std;
 
-class VehicleInterface {
+
+class AnimalInterface {
 public:
-    virtual void accelerate() = 0;
-    virtual void brake() = 0;
-    virtual ~VehicleInterface() = default;
+    virtual void makeSound() = 0;
+    virtual void move() = 0;
+    virtual ~AnimalInterface() = default;
 };
 
-class CarService {
+
+class DogService {
 public:
-    void pressGas() {
-        cout << "CarService: Run !!!" << endl;
+    void bark() {
+        cout << "DogService: Woof Woof!!!" << endl;
     }
 
-    void hitBrakes() {
-        cout << "CarService: Stop !!!" << endl;
+    void run() {
+        cout << "DogService: Running fast!!!" << endl;
     }
 };
 
-class CarServiceAdapter : public VehicleInterface {
+
+class DogServiceAdapter : public AnimalInterface {
 private:
-    CarService* adaptee;
+    DogService* adaptee;
 
 public:
-    CarServiceAdapter(CarService* service) : adaptee(service) {}
+    DogServiceAdapter(DogService* service) : adaptee(service) {}
 
-    void accelerate() override {
-        adaptee->pressGas();
+    void makeSound() override {
+        adaptee->bark();  
     }
 
-    void brake() override {
-        adaptee->hitBrakes();
+    void move() override {
+        adaptee->run();  
     }
 };
 
 int main() {
-    CarService carService;
-    VehicleInterface* vehicle = new CarServiceAdapter(&carService);
+    DogService dogService;
+    AnimalInterface* animal = new DogServiceAdapter(&dogService);
 
-    vehicle->accelerate();
-    vehicle->brake();
+    animal->makeSound();  
+    animal->move();       
 
-    delete vehicle;
+    delete animal;  
     return 0;
 }
-

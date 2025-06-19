@@ -2,113 +2,119 @@
 #include <string>
 using namespace std;
 
-class IVehicle {
+
+class IAnimal {
 public:
-    virtual double Speed() const = 0;
-    virtual string Info() const = 0;
-    virtual string getColor() const = 0;
-    virtual ~IVehicle() = default;
+    virtual double Speed() const = 0;      
+    virtual string Info() const = 0;       
+    virtual string getColor() const = 0;   
+    virtual ~IAnimal() = default;          
 };
 
-class Car : public IVehicle {
+
+class Dog : public IAnimal {
 public:
     double Speed() const override {
-        return 120.0;
+        return 30.0;  
     }
 
     string Info() const override {
-        return "Sedan Car";
+        return "Golden Retriever Dog";  
     }
 
     string getColor() const override {
-        return "Red";
+        return "Golden";  
     }
 };
 
-class Motorcycle : public IVehicle {
+
+class Cat : public IAnimal {
 public:
     double Speed() const override {
-        return 150.0;
+        return 20.0;  
     }
 
     string Info() const override {
-        return "Sport Bike";
+        return "Persian Cat";  
     }
 
     string getColor() const override {
-        return "Blue";
+        return "White";  
     }
 };
 
-class VehicleAbstraction {
+
+class AnimalAbstraction {
 protected:
-    IVehicle* vehicle;
+    IAnimal* animal;
 
 public:
-    VehicleAbstraction(IVehicle* vehicle) : vehicle(vehicle) {}
+    AnimalAbstraction(IAnimal* animal) : animal(animal) {}
 
     virtual double getSpeed() const {
-        return vehicle->Speed();
+        return animal->Speed();
     }
 
     virtual string getInfo() const {
-        return vehicle->Info();
+        return animal->Info();
     }
 
     string getColor() const {
-        return vehicle->getColor();
+        return animal->getColor();
     }
 };
 
-class AdvancedVehicle : public VehicleAbstraction {
+
+class AdvancedAnimal : public AnimalAbstraction {
 private:
     string premiumColor;
 
 public:
-    AdvancedVehicle(IVehicle* vehicle) : VehicleAbstraction(vehicle), premiumColor("Metallic") {}
+    AdvancedAnimal(IAnimal* animal) : AnimalAbstraction(animal), premiumColor("Shiny") {}
 
     double getSpeed() const override {
-        return vehicle->Speed() * 1.2;
+        return animal->Speed() * 1.5;  
     }
 
     string getInfo() const override {
-        return vehicle->Info() + " (Premium)";
+        return animal->Info() + " (Premium)";  
     }
 
     string getPremiumColor() const {
-        return premiumColor + " " + vehicle->getColor();
+        return premiumColor + " " + animal->getColor();  
     }
 };
 
-void printVehicleInfo(const VehicleAbstraction& vehicle) {
-    cout << "Vehicle: " << vehicle.getInfo() << endl;
-    cout << "Speed: " << vehicle.getSpeed() << " km/h" << endl;
-    cout << "Color: " << vehicle.getColor() << endl;
+
+void printAnimalInfo(const AnimalAbstraction& animal) {
+    cout << "Animal: " << animal.getInfo() << endl;
+    cout << "Speed: " << animal.getSpeed() << " km/h" << endl;
+    cout << "Color: " << animal.getColor() << endl;
 }
 
 int main() {
-    IVehicle* car = new Car();
-    IVehicle* bike = new Motorcycle();
+    IAnimal* dog = new Dog();
+    IAnimal* cat = new Cat();
 
-    cout << "Basic Vehicles" << endl;
-    VehicleAbstraction basicCar(car);
-    VehicleAbstraction basicBike(bike);
+    
+    cout << "Basic Animals" << endl;
+    AnimalAbstraction basicDog(dog);
+    AnimalAbstraction basicCat(cat);
 
-    printVehicleInfo(basicCar);
-    printVehicleInfo(basicBike);
+    printAnimalInfo(basicDog);
+    printAnimalInfo(basicCat);
 
-    cout << "\nAdvanced Vehicles" << endl;
-    AdvancedVehicle premiumCar(car);
-    AdvancedVehicle premiumBike(bike);
+    cout << "\nAdvanced Animals" << endl;
+    AdvancedAnimal premiumDog(dog);
+    AdvancedAnimal premiumCat(cat);
 
-    printVehicleInfo(premiumCar);
-    printVehicleInfo(premiumBike);
-    cout << "Premium Car Color: " << premiumCar.getPremiumColor() << endl;
-    cout << "Premium Bike Color: " << premiumBike.getPremiumColor() << endl;
+    printAnimalInfo(premiumDog);
+    printAnimalInfo(premiumCat);
+    cout << "Premium Dog Color: " << premiumDog.getPremiumColor() << endl;
+    cout << "Premium Cat Color: " << premiumCat.getPremiumColor() << endl;
 
-    delete car;
-    delete bike;
+    delete dog;
+    delete cat;
 
     return 0;
 }
-

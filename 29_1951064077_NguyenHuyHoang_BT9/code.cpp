@@ -2,6 +2,7 @@
 #include <string>
 using namespace std;
 
+
 class SpeedStrategy {
 public:
     virtual int getMaxSpeed() const = 0;
@@ -9,37 +10,40 @@ public:
     virtual ~SpeedStrategy() = default;
 };
 
-class CarStrategy : public SpeedStrategy {
+
+class DogStrategy : public SpeedStrategy {
 private:
     string color;
 
 public:
-    CarStrategy(const string& color) : color(color) {}
+    DogStrategy(const string& color) : color(color) {}
 
     int getMaxSpeed() const override {
-        return 200;
+        return 30;  
     }
 
     string getColor() const override {
-        return color;
+        return color;  
     }
 };
 
-class BicycleStrategy : public SpeedStrategy {
+
+class CatStrategy : public SpeedStrategy {
 private:
     string color;
 
 public:
-    BicycleStrategy(const string& color) : color(color) {}
+    CatStrategy(const string& color) : color(color) {}
 
     int getMaxSpeed() const override {
-        return 40;
+        return 20;  
     }
 
     string getColor() const override {
-        return color;
+        return color;  
     }
 };
+
 
 class Context {
 private:
@@ -57,7 +61,7 @@ public:
         return 0;
     }
 
-    string getVehicleColor() const {
+    string getAnimalColor() const {
         if (strategy != nullptr) {
             return strategy->getColor();
         }
@@ -68,19 +72,20 @@ public:
 int main() {
     Context context;
 
-    SpeedStrategy* car = new CarStrategy("Red");
-    context.setStrategy(car);
-    cout << "car max speed : " << context.getMaxSpeed() << endl;
-    cout << "car color: " << context.getVehicleColor() << endl;
+    
+    SpeedStrategy* dog = new DogStrategy("Brown");
+    context.setStrategy(dog);
+    cout << "Dog max speed: " << context.getMaxSpeed() << " km/h" << endl;
+    cout << "Dog color: " << context.getAnimalColor() << endl;
 
-    SpeedStrategy* bicycle = new BicycleStrategy("Xanh");
-    context.setStrategy(bicycle);
-    cout << "vehicle max speed: " << context.getMaxSpeed() << endl;
-    cout << "vehicle max speed: " << context.getVehicleColor() << endl;
+    
+    SpeedStrategy* cat = new CatStrategy("White");
+    context.setStrategy(cat);
+    cout << "Cat max speed: " << context.getMaxSpeed() << " km/h" << endl;
+    cout << "Cat color: " << context.getAnimalColor() << endl;
 
-    delete car;
-    delete bicycle;
+    delete dog;
+    delete cat;
 
     return 0;
 }
-
