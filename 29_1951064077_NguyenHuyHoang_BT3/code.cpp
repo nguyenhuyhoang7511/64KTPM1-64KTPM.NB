@@ -5,20 +5,20 @@ using namespace std;
 
 class Animal {
 public:
-    virtual string MakeSound() const = 0; 
+    virtual string CreateSound() const = 0; 
     virtual ~Animal() {}
 };
 
 class Dog : public Animal {
 public:
-    string MakeSound() const override {
+    string CreateSound() const override {
         return "GAU GAU";
     }
 };
 
 class Cat : public Animal {
 public:
-    string MakeSound() const override {
+    string CreateSound() const override {
         return "Meow";
     }
 };
@@ -30,7 +30,7 @@ public:
     
     void SomeOperation() const {
         Animal* animal = FactoryMethod();
-        cout << animal->MakeSound() << endl;
+        cout << animal->CreateSound() << endl;
         delete animal;
     }
 };
