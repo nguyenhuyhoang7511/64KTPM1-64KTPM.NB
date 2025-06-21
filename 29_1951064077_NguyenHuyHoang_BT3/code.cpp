@@ -35,14 +35,14 @@ public:
     }
 };
 
-class DogFactory : public AnimalFactory {
+class DogAnimal : public AnimalFactory {
 public:
     Animal* FactoryMethod() const override {
         return new Dog();
     }
 };
 
-class CatFactory : public AnimalFactory {
+class CatAnimal : public AnimalFactory {
 public:
     Animal* FactoryMethod() const override {
         return new Cat();
@@ -50,8 +50,8 @@ public:
 };
 
 int main() {
-    AnimalFactory* dogFactory = new DogFactory();
-    AnimalFactory* catFactory = new CatFactory();
+    AnimalFactory* dogFactory = new DogAnimal();
+    AnimalFactory* catFactory = new CatAnimal();
 
     dogFactory->SomeOperation();  
     catFactory->SomeOperation();  
